@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spark Cards ✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f6fafb;
+            min-height: 100vh;
+            padding: 20px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: #065f46;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3.2em;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 16px;
+            padding: 4px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 18px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.05em;
+        }
+
+        .tab.active {
+            background: #065f46;
+            color: white;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.3);
+        }
+
+        .tab:hover:not(.active) {
+            background: #f6fafb;
+            color: #495057;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin-bottom: 40px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 450px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .deck-marker {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            transform: rotateY(180deg);
+        }
+
+        .card-text {
+            color: white;
+            font-size: 1.4em;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            font-weight: 500;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .why-text {
+            font-size: 1em;
+            color: rgba(255,255,255,0.85);
+            font-style: italic;
+            margin-top: 24px;
+            font-weight: 400;
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1em;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-primary {
+            background: #065f46;
+            color: white;
+            border-color: #065f46;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+            border: none;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #495057;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            font-size: 1em;
+            background: white;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44,62,80,0.1);
+            border-color: #065f46;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .cards-list {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 40px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .cards-list h3 {
+            color: #065f46;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .card-item {
+            background: #f6fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .card-item:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-preview {
+            flex: 1;
+            color: #495057;
+        }
+
+        .card-preview strong {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .stats {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            color: #495057;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .stats h3 {
+            font-size: 1.3em;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        .no-cards {
+            text-align: center;
+            color: #6c757d;
+            padding: 60px 40px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .emoji-rating {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 32px;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .emoji-btn {
+            font-size: 2.2em;
+            background: #f6fafb;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .emoji-btn:hover {
+            transform: scale(1.1);
+            background: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        .emoji-rating-label {
+            color: #495057;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        #detailed-stats {
+            margin-top: 16px;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .emoji-rating {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .card-item {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+            
+            .card-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Spark Cards ✨</h1>
+            <p>Your personal confidence & knowledge builder</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="practice">🎯 Practice</button>
+            <button class="tab" data-tab="manage">📝 Manage Cards</button>
+            <button class="tab" data-tab="decks">🗂️ Decks</button>
+            <button class="tab" data-tab="backup">💾 Backup</button>
+        </div>
+
+        <!-- Practice Tab -->
+        <div class="tab-content active" id="practice">
+            <div class="stats">
+                <h3>📊 Your Progress</h3>
+                <p id="stats-text">No cards yet - add some below!</p>
+                <div id="detailed-stats"></div>
+            </div>
+
+            <div class="controls" style="margin-bottom: 20px;">
+                <select id="practice-deck-filter" class="btn btn-primary" style="padding: 10px 20px;">
+                    <option value="all">🎯 Practice All Decks</option>
+                </select>
+            </div>
+
+            <div id="practice-area">
+                <div class="no-cards">
+                    <p>🎴 No cards to practice yet!</p>
+                    <p>Switch to "Manage Cards" to add your first card</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Cards Tab -->
+        <div class="tab-content" id="manage">
+            <div class="form-group">
+                <label for="deck-select">Deck</label>
+                <select id="deck-select">
+                    <option value="">Select a deck...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="front-text">Front of Card (Question/Prompt)</label>
+                <textarea id="front-text" placeholder="What do you want to practice or remember?"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="back-text">Back of Card (Answer/Story)</label>
+                <textarea id="back-text" placeholder="The answer, story, or thing you want to remember"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="why-text">Why does this matter? (Your motivation)</label>
+                <input type="text" id="why-text" placeholder="So that I can... / Because I want to...">
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="add-card">✨ Add Card</button>
+                <button class="btn btn-warning" id="clear-form" style="display:none;">Cancel Edit</button>
+            </div>
+
+            <div class="cards-list" id="cards-list">
+                <h3>Your Cards</h3>
+                <div class="controls" style="margin-bottom: 20px;">
+                    <select id="manage-deck-filter" class="btn btn-primary" style="padding: 10px 20px;">
+                        <option value="all">📚 Show All Cards</option>
+                    </select>
+                </div>
+                <div id="cards-container">
+                    <p class="no-cards">No cards created yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decks Tab -->
+        <div class="tab-content" id="decks">
+            <div class="form-group">
+                <label for="new-deck-name">Create New Deck</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="new-deck-name" placeholder="e.g., Technical Concepts, My Habits, Daily Affirmations" style="flex: 1;">
+                    <button class="btn btn-primary" id="create-deck">Create</button>
+                </div>
+            </div>
+
+            <div class="cards-list" id="decks-list">
+                <h3>Your Decks</h3>
+                <div id="decks-container">
+                    <p class="no-cards">No custom decks yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup Tab -->
+        <div class="tab-content" id="backup">
+            <div class="stats">
+                <h3>💾 Backup Your Spark Cards</h3>
+                <p>Keep your cards safe! Download and upload backups easily.</p>
+            </div>
+            
+            <div class="controls" style="margin-bottom: 30px;">
+                <button class="btn btn-success" id="download-backup">📥 Download Backup</button>
+                <input type="file" id="upload-backup" accept=".json" style="display: none;">
+                <button class="btn btn-primary" id="upload-backup-btn">📤 Upload Backup</button>
+            </div>
+
+            <div class="cards-list">
+                <h3>Storage Info</h3>
+                <div style="color: #495057; line-height: 1.6;">
+                    <p><strong>📊 Current Data:</strong></p>
+                    <p id="backup-stats">Loading...</p>
+                    <br>
+                    <p><strong>💡 How it works:</strong></p>
+                    <p>• Download creates a JSON file with all your cards and decks</p>
+                    <p>• Upload restores everything from a backup file</p>
+                    <p>• Your data is stored locally in your browser</p>
+                    <p>• Regular backups prevent data loss!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; margin-top: 60px; padding: 20px; color: #6c757d; font-size: 0.9em; line-height: 1.6;">
+        Welcome to Angela's fun tools - built to brighten your day ☀️!<br>
+        Questions, ideas, feedback? Please share with me at <a href="mailto:menghuawu@gmail.com" style="color: #065f46; text-decoration: none;">menghuawu@gmail.com</a>.
+    </footer>
+
+    <script>
+        class SparkCardsApp {
+            constructor() {
+                this.cards = this.loadCards();
+                this.decks = this.loadDecks();
+                this.currentCardIndex = 0;
+                this.currentEditIndex = -1;
+                this.currentDeck = 'all';
+                this.jewelColors = [
+                    'linear-gradient(135deg, #ff6b6b, #ee5a52)', // ruby
+                    'linear-gradient(135deg, #4ecdc4, #44a08d)', // emerald
+                    'linear-gradient(135deg, #667eea, #764ba2)', // sapphire
+                    'linear-gradient(135deg, #f093fb, #f5576c)', // amethyst
+                    'linear-gradient(135deg, #ffecd2, #fcb69f)', // topaz
+                    'linear-gradient(135deg, #a8edea, #fed6e3)'  // opal
+                ];
+                this.emojiSets = {
+                    'technical': {
+                        emojis: ['😵', '🤔', '💡', '⚡'],
+                        labels: ['Totally lost', 'Getting confused', 'Starting to click', 'I got this!']
+                    },
+                    'habits': {
+                        emojis: ['😴', '😑', '😌', '⚡'],
+                        labels: ['Zero motivation', 'Meh, maybe', 'Feeling inspired', 'Ready to crush it!']
+                    },
+                    'affirmations': {
+                        emojis: ['😰', '😐', '😊', '💪'],
+                        labels: ['Super nervous', 'Kinda awkward', 'Feeling good', 'Totally confident!']
+                    },
+                    'default': {
+                        emojis: ['😬', '😐', '😍', '🔥'],
+                        labels: ['Struggling hard', 'Just okay', 'Pretty great', 'Absolutely nailed it!']
+                    }
+                };
+                this.initializeApp();
+            }
+
+            initializeApp() {
+                // Fix old cards that don't have deckId
+                this.cards.forEach(card => {
+                    if (!card.deckId) {
+                        card.deckId = 'technical'; // Default to technical concepts now
+                    }
+                });
+                this.saveCards(); // Save the fixed cards
+                
+                if (this.decks.length === 0) {
+                    this.decks = [
+                        { id: 'technical', name: '🧠 Technical Concepts', created: new Date().toLocaleDateString() },
+                        { id: 'habits', name: '💪 My Habits', created: new Date().toLocaleDateString() },
+                        { id: 'affirmations', name: '✨ Daily Affirmations', created: new Date().toLocaleDateString() }
+                    ];
+                    this.saveDecks();
+                }
+                
+                this.setupEventListeners();
+                this.updateDecksDisplay();
+                this.updateDeckSelectors();
+                this.updateCardsDisplay();
+                this.updatePracticeArea();
+                this.updateStats();
+                this.updateBackupStats();
+            }
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+
+                document.getElementById('add-card').addEventListener('click', () => {
+                    this.addOrUpdateCard();
+                });
+
+                document.getElementById('clear-form').addEventListener('click', () => {
+                    this.clearForm();
+                });
+
+                document.getElementById('create-deck').addEventListener('click', () => {
+                    this.createDeck();
+                });
+
+                document.getElementById('practice-deck-filter').addEventListener('change', (e) => {
+                    this.currentDeck = e.target.value;
+                    this.updatePracticeArea();
+                });
+
+                document.getElementById('manage-deck-filter').addEventListener('change', (e) => {
+                    this.updateCardsDisplay(e.target.value);
+                });
+
+                // Backup functionality
+                document.getElementById('download-backup').addEventListener('click', () => {
+                    this.downloadBackup();
+                });
+
+                document.getElementById('upload-backup-btn').addEventListener('click', () => {
+                    document.getElementById('upload-backup').click();
+                });
+
+                document.getElementById('upload-backup').addEventListener('change', (e) => {
+                    this.uploadBackup(e);
+                });
+            }
+
+            switchTab(tabName) {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName).classList.add('active');
+            }
+
+            addOrUpdateCard() {
+                const front = document.getElementById('front-text').value.trim();
+                const back = document.getElementById('back-text').value.trim();
+                const why = document.getElementById('why-text').value.trim();
+                const deckId = document.getElementById('deck-select').value;
+
+                if (!front || !back) {
+                    alert('Please fill in both front and back of the card!');
+                    return;
+                }
+
+                if (!deckId) {
+                    alert('Please select a deck for this card!');
+                    return;
+                }
+
+                const card = {
+                    id: this.currentEditIndex >= 0 ? this.cards[this.currentEditIndex].id : Date.now(),
+                    front,
+                    back,
+                    why: why || "Because it's important to me",
+                    deckId,
+                    timesViewed: this.currentEditIndex >= 0 ? this.cards[this.currentEditIndex].timesViewed : 0,
+                    mastered: this.currentEditIndex >= 0 ? this.cards[this.currentEditIndex].mastered : false,
+                    rating: this.currentEditIndex >= 0 ? this.cards[this.currentEditIndex].rating : null,
+                    created: this.currentEditIndex >= 0 ? this.cards[this.currentEditIndex].created : new Date().toLocaleDateString()
+                };
+
+                if (this.currentEditIndex >= 0) {
+                    this.cards[this.currentEditIndex] = card;
+                    this.currentEditIndex = -1;
+                } else {
+                    this.cards.push(card);
+                }
+
+                this.saveCards();
+                this.clearForm();
+                this.updateCardsDisplay();
+                this.updatePracticeArea();
+                this.updateStats();
+                this.updateBackupStats();
+            }
+
+            createDeck() {
+                const name = document.getElementById('new-deck-name').value.trim();
+                if (!name) {
+                    alert('Please enter a deck name!');
+                    return;
+                }
+
+                if (this.decks.length >= 5) {
+                    alert('Maximum 5 decks allowed!');
+                    return;
+                }
+
+                const deck = {
+                    id: Date.now().toString(),
+                    name,
+                    created: new Date().toLocaleDateString()
+                };
+
+                this.decks.push(deck);
+                this.saveDecks();
+                document.getElementById('new-deck-name').value = '';
+                this.updateDecksDisplay();
+                this.updateDeckSelectors();
+            }
+
+            editDeck(deckId) {
+                const deck = this.decks.find(d => d.id === deckId);
+                if (deck) {
+                    document.getElementById('new-deck-name').value = deck.name;
+                    this.currentEditDeckId = deckId;
+                    document.getElementById('create-deck').textContent = '✏️ Update Deck';
+                    document.getElementById('cancel-deck-edit').style.display = 'inline-block';
+                }
+            }
+
+            clearDeckForm() {
+                document.getElementById('new-deck-name').value = '';
+                this.currentEditDeckId = null;
+                document.getElementById('create-deck').textContent = 'Create';
+                document.getElementById('cancel-deck-edit').style.display = 'none';
+            }
+
+            deleteDeck(deckId) {
+                const deck = this.decks.find(d => d.id === deckId);
+                const cardsInDeck = this.cards.filter(c => c.deckId === deckId);
+                
+                if (cardsInDeck.length > 0) {
+                    if (!confirm(`Delete "${deck.name}" and its ${cardsInDeck.length} cards?`)) {
+                        return;
+                    }
+                    this.cards = this.cards.filter(c => c.deckId !== deckId);
+                    this.saveCards();
+                }
+
+                this.decks = this.decks.filter(d => d.id !== deckId);
+                this.saveDecks();
+                this.updateDecksDisplay();
+                this.updateDeckSelectors();
+                this.updateCardsDisplay();
+                this.updatePracticeArea();
+                this.updateStats();
+                this.updateBackupStats();
+            }
+
+            updateDecksDisplay() {
+                const container = document.getElementById('decks-container');
+                
+                if (this.decks.length === 0) {
+                    container.innerHTML = '<p class="no-cards">No custom decks yet</p>';
+                    return;
+                }
+
+                container.innerHTML = this.decks.map(deck => {
+                    const cardCount = this.cards.filter(c => c.deckId === deck.id).length;
+                    return `
+                        <div class="card-item">
+                            <div class="card-preview">
+                                <strong>${deck.name}</strong>
+                                <div style="font-size: 0.9em; opacity: 0.8;">
+                                    ${cardCount} cards • Created ${deck.created}
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-primary btn-small" onclick="app.editDeck('${deck.id}')">Edit</button>
+                                <button class="btn btn-warning btn-small" onclick="app.deleteDeck('${deck.id}')">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updateDeckSelectors() {
+                const deckSelect = document.getElementById('deck-select');
+                const practiceFilter = document.getElementById('practice-deck-filter');
+                const manageFilter = document.getElementById('manage-deck-filter');
+
+                const deckOptions = this.decks.map(deck => `<option value="${deck.id}">${deck.name}</option>`).join('');
+
+                deckSelect.innerHTML = '<option value="">Select a deck...</option>' + deckOptions;
+                practiceFilter.innerHTML = '<option value="all">🎯 Practice All Decks</option>' + deckOptions;
+                manageFilter.innerHTML = '<option value="all">📚 Show All Cards</option>' + deckOptions;
+            }
+
+            editCard(index) {
+                const card = this.cards[index];
+                document.getElementById('front-text').value = card.front;
+                document.getElementById('back-text').value = card.back;
+                document.getElementById('why-text').value = card.why;
+                document.getElementById('deck-select').value = card.deckId || '';
+                
+                this.currentEditIndex = index;
+                document.getElementById('add-card').textContent = '✏️ Update Card';
+                document.getElementById('clear-form').style.display = 'inline-block';
+                
+                this.switchTab('manage');
+            }
+
+            deleteCard(index) {
+                if (confirm('Are you sure you want to delete this card?')) {
+                    this.cards.splice(index, 1);
+                    this.saveCards();
+                    this.updateCardsDisplay();
+                    this.updatePracticeArea();
+                    this.updateStats();
+                    this.updateBackupStats();
+                }
+            }
+
+            clearForm() {
+                document.getElementById('front-text').value = '';
+                document.getElementById('back-text').value = '';
+                document.getElementById('why-text').value = '';
+                document.getElementById('deck-select').value = '';
+                this.currentEditIndex = -1;
+                document.getElementById('add-card').textContent = '✨ Add Card';
+                document.getElementById('clear-form').style.display = 'none';
+            }
+
+            updateCardsDisplay(filterDeck = 'all') {
+                const container = document.getElementById('cards-container');
+                let filteredCards = filterDeck === 'all' ? this.cards : this.cards.filter(c => c.deckId === filterDeck);
+                
+                if (filteredCards.length === 0) {
+                    container.innerHTML = '<p class="no-cards">No cards in this filter</p>';
+                    return;
+                }
+
+                container.innerHTML = filteredCards.map((card) => {
+                    const realIndex = this.cards.indexOf(card);
+                    const deck = this.decks.find(d => d.id === card.deckId);
+                    const deckName = deck ? deck.name : 'Unknown Deck';
+                    
+                    return `
+                        <div class="card-item">
+                            <div class="card-preview">
+                                <strong>${card.front}</strong>
+                                <div style="font-size: 0.9em; opacity: 0.8;">
+                                    ${card.back.substring(0, 100)}${card.back.length > 100 ? '...' : ''}
+                                </div>
+                                <div style="font-size: 0.8em; color: #4ecdc4; margin-top: 5px;">${deckName}</div>
+                                ${card.why ? `<div style="font-size: 0.8em; font-style: italic; margin-top: 5px;">${card.why}</div>` : ''}
+                                ${card.rating ? `<div style="font-size: 1.2em; margin-top: 5px;">Last rating: ${card.rating}</div>` : ''}
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-primary btn-small" onclick="app.editCard(${realIndex})">Edit</button>
+                                <button class="btn btn-warning btn-small" onclick="app.deleteCard(${realIndex})">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updatePracticeArea() {
+                const practiceArea = document.getElementById('practice-area');
+                let practiceCards = this.currentDeck === 'all' ? this.cards : this.cards.filter(c => c.deckId === this.currentDeck);
+                
+                if (practiceCards.length === 0) {
+                    practiceArea.innerHTML = `
+                        <div class="no-cards">
+                            <p>🎴 No cards to practice in this deck!</p>
+                            <p>Switch to "Manage Cards" to add cards to this deck</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (this.currentCardIndex >= practiceCards.length) {
+                    this.currentCardIndex = 0;
+                }
+
+                const currentCard = practiceCards[this.currentCardIndex];
+                const colorIndex = this.currentCardIndex % this.jewelColors.length;
+                const frontColor = this.jewelColors[colorIndex];
+                const backColor = this.jewelColors[(colorIndex + 1) % this.jewelColors.length];
+
+                // Get emoji set for this deck
+                const deck = this.decks.find(d => d.id === currentCard.deckId);
+                const deckType = deck ? deck.id : 'default';
+                const emojiSet = this.emojiSets[deckType] || this.emojiSets.default;
+
+                // Get deck emoji for marker (only show in "all decks" mode)
+                const deckEmoji = deck ? deck.name.split(' ')[0] : '📚';
+                const showDeckMarker = this.currentDeck === 'all';
+
+                practiceArea.innerHTML = `
+                    <div class="card-container">
+                        <div class="flashcard" id="current-flashcard">
+                            <div class="card-face card-front" style="background: ${frontColor}">
+                                ${showDeckMarker ? `<div class="deck-marker">${deckEmoji}</div>` : ''}
+                                <div class="card-text">${currentCard.front}</div>
+                                <div class="why-text">💎 ${currentCard.why}</div>
+                            </div>
+                            <div class="card-face card-back" style="background: ${backColor}">
+                                ${showDeckMarker ? `<div class="deck-marker">${deckEmoji}</div>` : ''}
+                                <div class="card-text">${currentCard.back}</div>
+                                <div class="why-text">💎 ${currentCard.why}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="app.flipCard()">🔄 Flip Card</button>
+                        <button class="btn btn-primary" onclick="app.nextCard()">➡️ Next Card</button>
+                        <button class="btn btn-success" onclick="app.markMastered()">
+                            ${currentCard.mastered ? '✅ Mastered' : '⭐ Mark Mastered'}
+                        </button>
+                    </div>
+                    <div class="emoji-rating">
+                        <div class="emoji-rating-label">How'd that feel?</div>
+                        ${emojiSet.emojis.map((emoji, index) => `
+                            <button class="emoji-btn" onclick="app.rateCard(${index})" title="${emojiSet.labels[index]}">${emoji}</button>
+                        `).join('')}
+                    </div>
+                `;
+
+                // Add click event to flip card
+                const flashcard = document.getElementById('current-flashcard');
+                if (flashcard) {
+                    flashcard.addEventListener('click', () => {
+                        this.flipCard();
+                    });
+                }
+
+                currentCard.timesViewed++;
+                this.saveCards();
+            }
+
+            rateCard(rating) {
+                let practiceCards = this.currentDeck === 'all' ? this.cards : this.cards.filter(c => c.deckId === this.currentDeck);
+                const currentCard = practiceCards[this.currentCardIndex];
+                
+                // Find the actual card in the main array and update it
+                const cardIndex = this.cards.findIndex(c => c.id === currentCard.id);
+                if (cardIndex >= 0) {
+                    const deck = this.decks.find(d => d.id === currentCard.deckId);
+                    const deckType = deck ? deck.id : 'default';
+                    const emojiSet = this.emojiSets[deckType] || this.emojiSets.default;
+                    
+                    this.cards[cardIndex].rating = emojiSet.emojis[rating];
+                    this.saveCards();
+                    
+                    // Auto-advance to next card
+                    setTimeout(() => this.nextCard(), 500);
+                }
+            }
+
+            flipCard() {
+                const flashcard = document.getElementById('current-flashcard');
+                if (flashcard) {
+                    flashcard.classList.toggle('flipped');
+                }
+            }
+
+            nextCard() {
+                let practiceCards = this.currentDeck === 'all' ? this.cards : this.cards.filter(c => c.deckId === this.currentDeck);
+                if (practiceCards.length <= 1) return;
+                
+                let nextIndex;
+                do {
+                    nextIndex = Math.floor(Math.random() * practiceCards.length);
+                } while (nextIndex === this.currentCardIndex && practiceCards.length > 1);
+                
+                this.currentCardIndex = nextIndex;
+                this.updatePracticeArea();
+                this.updateStats();
+            }
+
+            markMastered() {
+                let practiceCards = this.currentDeck === 'all' ? this.cards : this.cards.filter(c => c.deckId === this.currentDeck);
+                const currentCard = practiceCards[this.currentCardIndex];
+                
+                const cardIndex = this.cards.findIndex(c => c.id === currentCard.id);
+                if (cardIndex >= 0) {
+                    this.cards[cardIndex].mastered = !this.cards[cardIndex].mastered;
+                    this.saveCards();
+                    this.updatePracticeArea();
+                    this.updateStats();
+                    
+                    if (this.cards[cardIndex].mastered) {
+                        alert('🎉 Awesome! You\'ve mastered this card! 🌟');
+                    }
+                }
+            }
+
+            updateStats() {
+                const totalCards = this.cards.length;
+                const masteredCards = this.cards.filter(card => card.mastered).length;
+                const totalViews = this.cards.reduce((sum, card) => sum + card.timesViewed, 0);
+                
+                const statsText = document.getElementById('stats-text');
+                if (totalCards === 0) {
+                    statsText.textContent = 'No cards yet - add some below!';
+                    const detailedStats = document.getElementById('detailed-stats');
+                    if (detailedStats) {
+                        detailedStats.innerHTML = '';
+                    }
+                } else {
+                    statsText.innerHTML = `
+                        📚 ${totalCards} cards total | 
+                        ⭐ ${masteredCards} mastered | 
+                        👀 ${totalViews} total views
+                    `;
+                    
+                    // Detailed stats per deck
+                    const deckStats = this.decks.map(deck => {
+                        const deckCards = this.cards.filter(c => c.deckId === deck.id);
+                        const deckMastered = deckCards.filter(c => c.mastered).length;
+                        
+                        // Count ratings
+                        const emojiSet = this.emojiSets[deck.id] || this.emojiSets.default;
+                        const ratingCounts = emojiSet.emojis.map(emoji => 
+                            deckCards.filter(c => c.rating === emoji).length
+                        );
+                        
+                        return {
+                            name: deck.name,
+                            total: deckCards.length,
+                            mastered: deckMastered,
+                            ratings: ratingCounts,
+                            emojis: emojiSet.emojis
+                        };
+                    }).filter(stat => stat.total > 0);
+                    
+                    const detailedStats = document.getElementById('detailed-stats');
+                    if (detailedStats && deckStats.length > 0) {
+                        detailedStats.innerHTML = deckStats.map(stat => `
+                            <div style="margin-bottom: 8px;">
+                                <strong>${stat.name}:</strong> ${stat.total} cards, ${stat.mastered} mastered
+                                ${stat.ratings.map((count, i) => count > 0 ? `${stat.emojis[i]}${count}` : '').filter(x => x).join(' ')}
+                            </div>
+                        `).join('');
+                    }
+                }
+            }
+
+            downloadBackup() {
+                const backup = {
+                    cards: this.cards,
+                    decks: this.decks,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0'
+                };
+
+                const dataStr = JSON.stringify(backup, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `spark-cards-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                alert('📥 Backup downloaded! Keep this file safe.');
+            }
+
+            uploadBackup(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const backup = JSON.parse(e.target.result);
+                        
+                        if (backup.cards && backup.decks) {
+                            if (confirm('🔄 This will replace all your current cards and decks. Are you sure?')) {
+                                this.cards = backup.cards;
+                                this.decks = backup.decks;
+                                this.currentCardIndex = 0;
+                                this.currentDeck = 'all';
+                                
+                                this.saveCards();
+                                this.saveDecks();
+                                
+                                this.updateDecksDisplay();
+                                this.updateDeckSelectors();
+                                this.updateCardsDisplay();
+                                this.updatePracticeArea();
+                                this.updateStats();
+                                this.updateBackupStats();
+                                
+                                alert('✅ Backup restored successfully!');
+                            }
+                        } else {
+                            alert('❌ Invalid backup file format');
+                        }
+                    } catch (error) {
+                        alert('❌ Error reading backup file');
+                    }
+                };
+                reader.readAsText(file);
+                
+                // Reset file input
+                event.target.value = '';
+            }
+
+            updateBackupStats() {
+                const stats = document.getElementById('backup-stats');
+                if (stats) {
+                    const totalCards = this.cards.length;
+                    const totalDecks = this.decks.length;
+                    const dataSize = JSON.stringify({cards: this.cards, decks: this.decks}).length;
+                    
+                    stats.innerHTML = `
+                        📚 ${totalCards} cards across ${totalDecks} decks<br>
+                        💾 ~${Math.round(dataSize/1024)}KB of data<br>
+                        📅 Last updated: ${new Date().toLocaleString()}
+                    `;
+                }
+            }
+
+            loadCards() {
+                const saved = localStorage.getItem('sparkCards');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveCards() {
+                localStorage.setItem('sparkCards', JSON.stringify(this.cards));
+            }
+
+            loadDecks() {
+                const saved = localStorage.getItem('sparkDecks');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveDecks() {
+                localStorage.setItem('sparkDecks', JSON.stringify(this.decks));
+            }
+        }
+
+        const app = new SparkCardsApp();
+    </script>
+</body>
+</html>
